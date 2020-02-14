@@ -36,7 +36,7 @@ source bin/activate
 python handler.py
 ```
 
-## Set up AWS infrastructure with terraform
+## Set up AWS infrastructure with Terraform
 1) Make sure you have modified src/data/static_data.py with your own data. I recommend testing this locally before deploying!
 2) Run src/gen_zip.sh: `cd src && sh gen_zip.sh`. This will zip up the python source so it can be uploaded to the AWS Lambda.
 3) Modify terraform/main.tf to fit your needs. The main thing you may need to change is the cron expression (scheduler_cron_expr). It is currently set up to run twice on Thursday and Friday. Note it will only send a text on Friday's if there was a holiday.
@@ -46,14 +46,3 @@ python handler.py
 7) That's it! The terraform should have created an AWS Lambda, uploaded the source code and created a CloudWatch Event Rule to execute the lambda automatically
 
 - If you need to update the code or infrastructure at all, just repeat these steps! Terraform will pick up on any changes to the zip file and update accordingly. 
-
-
-## Deploy code to AWS Lambda
-
-To deploy the script to AWS Lambda without terraform, modify the variables in the top of deploy.sh and then run:
-```
-sh deploy.sh
-```
-
-- I don't see why this is needed since Terraform will do the work for us, but perhaps someone will find this script useful.
-
