@@ -2,9 +2,10 @@
 Trash Bot is a service that sends sns (text) reminders to a list of recipients to take the trash out. Trash bot can compensate for holidays and send the occational dad joke.
 
 ## Requirements
-- python 3.7
+- python 3.8
 - pip3
 - virtualenv
+- terraform 0.12
 
 ### Setup (required) - From inside the trash-bot folder, run the following
 
@@ -35,12 +36,24 @@ source bin/activate
 python handler.py
 ```
 
-## Run script as AWS Lambda
+## Set up AWS infrastructure with terraform
+1) Make sure you have modified src/data/static_data.py with your own data. I recommend testing this locally before deploying!
+2) Run src/gen_zip.sh: `cd src && sh gen_zip.sh`. This will zip up the python source so it can be uploaded to the AWS Lambda.
+3) Modify terraform/main.tf to fit your needs. The main thing you may need to change is the cron expression (scheduler_cron_expr). It is currently set up to run twice on Thursday and Friday. Note it will only send a text on Friday's if there was a holiday.
+4) Run the terraform plan command: `terraform plan -out planfile`
+5) Inspect the output for errors
+6) Run the terraform apply command: `terraform apply "planfile"`
+7) That's it! The terraform should have created an AWS Lambda, uploaded the source code and created a CloudWatch Event Rule to execute the lambda automatically
 
-To deploy the script to AWS Lambda, modify the variables in the top of deploy.sh and then run
-```
-./deploy.sh
-```
-Note: If you get a permissions error, try `chmod u+x ./deploy.sh` and then `./deploy.sh` 
+- If you need to update the code or infrastructure at all, just repeat these steps! Terraform will pick up on any changes to the zip file and update accordingly. 
 
-To run ona regular schedule, use AWS CloudWatch and set up a schedule job on the lambda
+
+## Deploy code to AWS Lambda
+
+To deploy the script to AWS Lambda without terraform, modify the variables in the top of deploy.sh and then run:
+```
+sh deploy.sh
+```
+
+- I don't see why this is needed since Terraform will do the work for us, but perhaps someone will find this script useful.
+
