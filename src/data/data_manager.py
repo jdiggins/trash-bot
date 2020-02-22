@@ -1,5 +1,5 @@
 import datetime
-from datetime import datetime, date, timedelta
+from datetime import datetime, tzinfo, timedelta, date
 from data.static_data import holidays, messages, recipients
 import requests
 import random
@@ -12,12 +12,12 @@ class Data_Manager(object):
         self.holidays = holidays()
 
     def load_random_message(self):
-        rand = random.randint(0,len(self.messages))
+        rand = random.randint(0, (len(self.messages)- 1) )
         return self.messages[rand]
 
     def get_holiday_msg(self):
         today = date.today()
-        for i in range(-4,1):
+        for i in range(-5,1):
             if (msg := self.holidays.get(today + timedelta(days=i))) is not None:
                 return msg
         return None
